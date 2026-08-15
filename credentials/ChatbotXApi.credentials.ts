@@ -8,7 +8,7 @@ import type {
 export class ChatbotXApi implements ICredentialType {
 	name = 'chatbotXApi';
 	displayName = 'ChatbotX API';
-	icon = 'file:../nodes/ChatbotX/icons/chatbotx.svg' as const;
+	icon = { light: 'file:../nodes/ChatbotX/icons/chatbotx.png', dark: 'file:../nodes/ChatbotX/icons/chatbotx.dark.png' } as const;
 	documentationUrl = 'https://chatbotx.io/docs/api-reference/api-overview';
 
 	properties: INodeProperties[] = [
