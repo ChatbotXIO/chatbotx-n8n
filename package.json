@@ -1,0 +1,61 @@
+{
+    "name": "n8n-nodes-chatbotx",
+    "version": "0.1.0",
+    "description": "n8n community nodes for the ChatbotX Public API and webhooks",
+    "license": "MIT",
+    "homepage": "https://chatbotx.io",
+    "keywords": [
+        "n8n-community-node-package",
+        "chatbotx",
+        "chatbot",
+        "automation",
+        "omnichannel"
+    ],
+    "author": {
+        "name": "ChatbotXIO",
+        "email": "support@chatbotx.io"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ChatbotXIO/n8n-nodes-chatbotx.git"
+    },
+    "scripts": {
+        "build": "n8n-node build",
+        "build:watch": "tsc --watch",
+        "dev": "dotenv -e .env -- n8n-node dev",
+        "lint": "n8n-node lint",
+        "lint:fix": "n8n-node lint --fix",
+        "check-types": "tsc --noEmit",
+        "test": "npm run build && node --test tests/*.test.cjs",
+        "release": "n8n-node release",
+        "prepublishOnly": "n8n-node prerelease"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE.md"
+    ],
+    "n8n": {
+        "n8nNodesApiVersion": 1,
+        "strict": true,
+        "credentials": [
+            "dist/credentials/ChatbotXApi.credentials.js"
+        ],
+        "nodes": [
+            "dist/nodes/ChatbotX/ChatbotX.node.js",
+            "dist/nodes/ChatbotX/ChatbotXTriggerEvents.node.js",
+            "dist/nodes/ChatbotX/ChatbotXTriggerFlowData.node.js"
+        ]
+    },
+    "devDependencies": {
+        "@n8n/node-cli": "*",
+        "dotenv-cli": "^11.0.0",
+        "eslint": "9.32.0",
+        "prettier": "3.6.2",
+        "release-it": "^19.0.4",
+        "typescript": "5.9.2"
+    },
+    "peerDependencies": {
+        "n8n-workflow": "*"
+    }
+}
