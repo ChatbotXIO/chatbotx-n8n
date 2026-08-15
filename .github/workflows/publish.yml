@@ -82,7 +82,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: 'npm ci'
+        run: 'npm install'
 
       - name: Release
         # Publishes to npm with a provenance attestation (requires id-token: write above).
