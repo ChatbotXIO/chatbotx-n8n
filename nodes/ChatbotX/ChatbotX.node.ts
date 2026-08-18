@@ -292,7 +292,12 @@ export class ChatbotX implements INodeType {
 						displayName: 'Field',
 						name: 'field',
 						values: [
-							{ displayName: 'Custom Field ID', name: 'customFieldId', type: 'string', default: '' },
+							{
+								displayName: 'Custom Field ID',
+								name: 'customFieldId',
+								type: 'string',
+								default: '',
+							},
 							{ displayName: 'Value', name: 'value', type: 'string', default: '' },
 						],
 					},
@@ -406,11 +411,7 @@ export class ChatbotX implements INodeType {
 			},
 
 			async getInboxes(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-				const response = (await chatbotXApiRequest.call(
-					this,
-					'GET',
-					'/v1/inboxes',
-				)) as IDataObject;
+				const response = (await chatbotXApiRequest.call(this, 'GET', '/v1/inboxes')) as IDataObject;
 				const inboxes = (response.data ?? []) as IDataObject[];
 				return inboxes.map((inbox) => ({
 					name: (inbox.name as string) ?? (inbox.id as string),
@@ -468,6 +469,26 @@ export class ChatbotX implements INodeType {
 	}
 }
 
+function normalizeIdentifier(identifier: string): string {
+	const trimmed = identifier.trim();
+
+	if (/^(?:id|email|phone):/i.test(trimmed)) {
+		return trimmed;
+	}
+	if (trimmed.includes('@')) {
+		return `email:${trimmed}`;
+	}
+	if (trimmed.includes('+')) {
+		return `phone:${trimmed}`;
+	}
+
+	if (/^\d+$/.test(trimmed)) {
+		return trimmed.length > 15 ? `id:${trimmed}` : `phone:${trimmed}`;
+	}
+
+	return trimmed;
+}
+
 async function executeContactOperation(
 	this: IExecuteFunctions,
 	operation: string,
@@ -492,7 +513,7 @@ async function executeContactOperation(
 		}
 
 		case 'get': {
-			const identifier = this.getNodeParameter('identifier', i) as string;
+			const identifier = normalizeIdentifier(this.getNodeParameter('identifier', i) as string);
 			return (await chatbotXApiRequest.call(
 				this,
 				'GET',
@@ -517,7 +538,7 @@ async function executeContactOperation(
 		}
 
 		case 'upsert': {
-			const identifier = this.getNodeParameter('identifier', i) as string;
+			const identifier = normalizeIdentifier(this.getNodeParameter('identifier', i) as string);
 			const additionalFields = this.getNodeParameter('additionalFields', i, {}) as IDataObject;
 			return (await chatbotXApiRequest.call(
 				this,
@@ -528,7 +549,7 @@ async function executeContactOperation(
 		}
 
 		case 'delete': {
-			const identifier = this.getNodeParameter('identifier', i) as string;
+			const identifier = normalizeIdentifier(this.getNodeParameter('identifier', i) as string);
 			await chatbotXApiRequest.call(
 				this,
 				'DELETE',
@@ -551,7 +572,7 @@ async function executeContactOperation(
 		}
 
 		case 'setCustomFields': {
-			const identifier = this.getNodeParameter('identifier', i) as string;
+			const identifier = normalizeIdentifier(this.getNodeParameter('identifier', i) as string);
 			const fieldsCollection = this.getNodeParameter('fields', i, {}) as IDataObject;
 			const fields = ((fieldsCollection.field ?? []) as IDataObject[]).map((field) => ({
 				customFieldId: field.customFieldId,
@@ -567,7 +588,7 @@ async function executeContactOperation(
 		}
 
 		case 'deleteCustomField': {
-			const identifier = this.getNodeParameter('identifier', i) as string;
+			const identifier = normalizeIdentifier(this.getNodeParameter('identifier', i) as string);
 			const idOrName = this.getNodeParameter('idOrName', i) as string;
 			await chatbotXApiRequest.call(
 				this,
@@ -579,7 +600,7 @@ async function executeContactOperation(
 
 		case 'addTags':
 		case 'removeTags': {
-			const identifier = this.getNodeParameter('identifier', i) as string;
+			const identifier = normalizeIdentifier(this.getNodeParameter('identifier', i) as string);
 			const tagIds = this.getNodeParameter('tagIds', i, []) as string[];
 			const method: IHttpRequestMethods = operation === 'addTags' ? 'POST' : 'DELETE';
 			await chatbotXApiRequest.call(
@@ -592,7 +613,7 @@ async function executeContactOperation(
 		}
 
 		case 'sendMessage': {
-			const identifier = this.getNodeParameter('identifier', i) as string;
+			const identifier = normalizeIdentifier(this.getNodeParameter('identifier', i) as string);
 			const text = this.getNodeParameter('text', i) as string;
 			const inboxId = this.getNodeParameter('inboxId', i, '') as string;
 			const body: IDataObject = { text };
@@ -607,7 +628,7 @@ async function executeContactOperation(
 		}
 
 		case 'sendFlow': {
-			const identifier = this.getNodeParameter('identifier', i) as string;
+			const identifier = normalizeIdentifier(this.getNodeParameter('identifier', i) as string);
 			const flowId = this.getNodeParameter('flowId', i) as string;
 			const inboxId = this.getNodeParameter('inboxId', i, '') as string;
 			const body: IDataObject = { flowId };
