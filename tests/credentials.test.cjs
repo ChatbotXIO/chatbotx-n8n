@@ -13,11 +13,11 @@ test('ChatbotXApi authenticates with a Bearer header built from the access token
 	);
 });
 
-test('ChatbotXApi tests the credential against GET /v1/workspaces', () => {
+test('ChatbotXApi tests the credential against GET /v1/workspace/settings', () => {
 	const credential = new ChatbotXApi();
 
 	assert.equal(credential.test.request.method, 'GET');
-	assert.equal(credential.test.request.url, '/v1/workspaces');
+	assert.equal(credential.test.request.url, '/v1/workspace/settings');
 });
 
 test('ChatbotXApi marks the access token as a password field', () => {

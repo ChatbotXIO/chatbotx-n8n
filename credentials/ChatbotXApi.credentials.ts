@@ -44,7 +44,7 @@ export class ChatbotXApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: '={{$credentials.apiUrl.replace(/\\/$/, "")}}',
-			url: '/v1/workspaces',
+			url: '/v1/workspace/settings',
 			method: 'GET',
 		},
 	};
